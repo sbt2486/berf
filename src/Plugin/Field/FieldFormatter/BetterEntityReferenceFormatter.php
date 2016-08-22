@@ -170,9 +170,16 @@ class BetterEntityReferenceFormatter extends EntityReferenceEntityFormatter {
   }
 
   /**
+   * Gets the render array of entities considering formatter's advanced options.
+   *
    * @param \Drupal\Core\Field\FieldItemListInterface $items
-   * @param $langcode
+   *   The field values to be rendered.
+   * @param string $langcode
+   *   The language that should be used to render the field.
+   *
    * @return array
+   *   A renderable array for $items, as an array of child elements keyed by
+   *   consecutive numeric indexes starting from 0.
    */
   protected function getAdvancedSelection(FieldItemListInterface $items, $langcode, $amount, $offset) {
     $elements = [];
@@ -242,8 +249,10 @@ class BetterEntityReferenceFormatter extends EntityReferenceEntityFormatter {
   }
 
   /**
-   * @param $items
-   * @param $langcode
+   * Get the formatters selection mode options.
+   *
+   * @return array
+   *   Array of available selection modes.
    */
   protected function getSelectionModes() {
     return [
