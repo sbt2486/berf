@@ -15,9 +15,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *   label = @Translation("Advanced Rendered Entity"),
  *   description = @Translation("Display a configured set of referenced entities using entity_view()."),
  *   field_types = {
- *     "entity_reference",
- *     "file",
- *     "image"
+ *     "entity_reference"
  *   }
  * )
  */
