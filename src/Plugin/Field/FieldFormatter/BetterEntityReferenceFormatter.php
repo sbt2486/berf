@@ -8,7 +8,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Plugin implementation of the 'configurable entity reference' field formatter.
+ * Plugin implementation of the 'better entity reference' field formatter.
  *
  * @FieldFormatter(
  *   id = "better_entity_reference_view",
@@ -49,6 +49,7 @@ class BetterEntityReferenceFormatter extends EntityReferenceEntityFormatter {
       'selection_mode' => 'all',
       'amount' => 1,
       'offset' => 0,
+      'reverse' => FALSE,
     ) + parent::defaultSettings();
   }
 
@@ -66,17 +67,19 @@ class BetterEntityReferenceFormatter extends EntityReferenceEntityFormatter {
       '#required' => TRUE,
     ];
 
+    $show_advanced = [
+      'visible' => [
+        ':input[name="fields[field_images][settings_edit_form][settings][selection_mode]"]' => ['value' => 'advanced'],
+      ],
+    ];
+
     $elements['amount'] = [
       '#type' => 'number',
       '#step' => 1,
       '#min' => 1,
       '#title' => t('Amount of displayed entities'),
       '#default_value' => $this->getSetting('amount'),
-      '#states' => [
-        'visible' => [
-          ':input[name="fields[field_images][settings_edit_form][settings][selection_mode]"]' => ['value' => 'advanced'],
-        ],
-      ],
+      '#states' => $show_advanced,
     ];
 
     $elements['offset'] = [
@@ -85,11 +88,15 @@ class BetterEntityReferenceFormatter extends EntityReferenceEntityFormatter {
       '#min' => 0,
       '#title' => t('Offset'),
       '#default_value' => $this->getSetting('offset'),
-      '#states' => [
-        'visible' => [
-          ':input[name="fields[field_images][settings_edit_form][settings][selection_mode]"]' => ['value' => 'advanced'],
-        ],
-      ],
+      '#states' => $show_advanced,
+    ];
+
+    $elements['reverse'] = [
+      '#type' => 'checkbox',
+      '#title' => t('Reverse order'),
+      '#desctiption' => t('Check this if you want to show the last added entities of the field. For example use amount 2 and "Reverse order" in order to display the last two entities in the field.'),
+      '#default_value' => $this->getSetting('reverse'),
+      '#states' => $show_advanced,
     ];
 
     return $elements;
@@ -109,11 +116,13 @@ class BetterEntityReferenceFormatter extends EntityReferenceEntityFormatter {
       $amount = $this->getSetting('amount') ? $this->getSetting('amount') : 1;
       $summary[] = \Drupal::translation()->formatPlural(
         $amount,
-        'Showing @amount entity starting at @offset',
-        'Showing @amount entities starting at @offset', [
-        '@amount' => $amount,
-        '@offset' => $this->getSetting('offset') ? $this->getSetting('offset') : 0,
-      ]);
+        $this->getSetting('reverse') ? 'Showing @amount entity starting at @offset in reverse order' : 'Showing @amount entity starting at @offset',
+        $this->getSetting('reverse') ? 'Showing @amount entities starting at @offset in reverse order': 'Showing @amount entities starting at @offset',
+        [
+          '@amount' => $amount,
+          '@offset' => $this->getSetting('offset') ? $this->getSetting('offset') : 0,
+        ]
+      );
     }
 
     return $summary;
@@ -168,8 +177,12 @@ class BetterEntityReferenceFormatter extends EntityReferenceEntityFormatter {
   protected function getAdvancedSelection(FieldItemListInterface $items, $langcode, $amount, $offset) {
     $elements = [];
     $count = 0;
+    $entities = $this->getEntitiesToView($items, $langcode);
+    if ($this->getSetting('reverse')) {
+      $entities = array_reverse($entities);
+    }
 
-    foreach ($this->getEntitiesToView($items, $langcode) as $delta => $entity) {
+    foreach ($entities as $delta => $entity) {
 
       // Show entities if offset was reached and amount limit isn't reached yet.
       if ($delta >= $offset && $count < $amount) {
@@ -219,6 +232,10 @@ class BetterEntityReferenceFormatter extends EntityReferenceEntityFormatter {
 
         $count++;
       }
+    }
+
+    if ($this->getSetting('reverse')) {
+      $elements = array_reverse($elements);
     }
 
     return $elements;
