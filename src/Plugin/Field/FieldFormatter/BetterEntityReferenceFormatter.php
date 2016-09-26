@@ -115,7 +115,7 @@ class BetterEntityReferenceFormatter extends EntityReferenceEntityFormatter {
       $summary[] = \Drupal::translation()->formatPlural(
         $amount,
         $this->getSetting('reverse') ? 'Showing @amount entity starting at @offset in reverse order' : 'Showing @amount entity starting at @offset',
-        $this->getSetting('reverse') ? 'Showing @amount entities starting at @offset in reverse order': 'Showing @amount entities starting at @offset',
+        $this->getSetting('reverse') ? 'Showing @amount entities starting at @offset in reverse order' : 'Showing @amount entities starting at @offset',
         [
           '@amount' => $amount,
           '@offset' => $this->getSetting('offset') ? $this->getSetting('offset') : 0,
@@ -174,6 +174,10 @@ class BetterEntityReferenceFormatter extends EntityReferenceEntityFormatter {
    *   The field values to be rendered.
    * @param string $langcode
    *   The language that should be used to render the field.
+   * @param int $amount
+   *   The amount of field items to show.
+   * @param int $offset
+   *   The offset to apply for displayed items.
    *
    * @return array
    *   A renderable array for $items, as an array of child elements keyed by
@@ -197,7 +201,7 @@ class BetterEntityReferenceFormatter extends EntityReferenceEntityFormatter {
         // all the relevant information about this field and the referenced
         // entity that is being rendered.
         $recursive_render_id = $items->getFieldDefinition()
-            ->getTargetEntityTypeId()
+          ->getTargetEntityTypeId()
           . $items->getFieldDefinition()->getTargetBundle()
           . $items->getName()
           . $entity->id();
@@ -247,7 +251,7 @@ class BetterEntityReferenceFormatter extends EntityReferenceEntityFormatter {
   }
 
   /**
-   * Get the formatters selection mode options.
+   * Get the formatter's selection mode options.
    *
    * @return array
    *   Array of available selection modes.
