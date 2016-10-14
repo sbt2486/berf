@@ -91,6 +91,7 @@ class BetterEntityReferenceFormatter extends EntityReferenceEntityFormatter {
       '#title' => t('Offset'),
       '#default_value' => $this->getSetting('offset'),
       '#states' => $show_advanced,
+      '#element_validate' => [[$this, 'validateOffset']],
     ];
 
     $elements['reverse'] = [
@@ -102,6 +103,31 @@ class BetterEntityReferenceFormatter extends EntityReferenceEntityFormatter {
     ];
 
     return $elements;
+  }
+
+  /**
+   * Validation callback for the offset element.
+   *
+   * @param array $element
+   *   The form element to process.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The current state of the form.
+   */
+  public function validateOffset(&$element, FormStateInterface $form_state) {
+    $cardinality = $this->fieldDefinition->getFieldStorageDefinition()->getCardinality();
+    $field_settings = $form_state->getValues()['fields'][$form_state->getTriggeringElement()['#field_name']]['settings_edit_form']['settings'];
+    $offset_maximum = $cardinality - $field_settings['amount'];
+    // If cardinality of the field is limited, the offset has to be lower than
+    // the field's cardinality minus the submitted amount value.
+    if ($cardinality > 0 && $field_settings['offset'] > $offset_maximum) {
+      $form_state->setError(
+        $element,
+        t(
+          'The maximal offset for the submitted amount is @offset',
+          ['@offset' => $offset_maximum]
+        )
+      );
+    }
   }
 
   /**
