@@ -56,6 +56,7 @@ class BetterEntityReferenceFormatter extends EntityReferenceEntityFormatter {
    */
   public function settingsForm(array $form, FormStateInterface $form_state) {
     $elements = parent::settingsForm($form, $form_state);
+    $cardinality = $this->fieldDefinition->getFieldStorageDefinition()->getCardinality();
 
     $elements['selection_mode'] = [
       '#type' => 'select',
@@ -79,6 +80,9 @@ class BetterEntityReferenceFormatter extends EntityReferenceEntityFormatter {
       '#default_value' => $this->getSetting('amount'),
       '#states' => $show_advanced,
     ];
+    if ($cardinality > 0) {
+      $elements['amount']['#max'] = $cardinality;
+    }
 
     $elements['offset'] = [
       '#type' => 'number',
