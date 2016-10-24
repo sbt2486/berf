@@ -3,5 +3,3 @@ name: Better entity reference formatter
 description: Provides advanced display settings for entity reference fields.
 core: 8.x
 
-dependencies:
-  - file_entity
