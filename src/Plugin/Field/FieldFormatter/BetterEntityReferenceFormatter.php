@@ -68,7 +68,9 @@ class BetterEntityReferenceFormatter extends EntityReferenceEntityFormatter {
 
     $show_advanced = [
       'visible' => [
-        ':input[name="fields[field_images][settings_edit_form][settings][selection_mode]"]' => ['value' => 'advanced'],
+        ':input[name="fields[' . $this->fieldDefinition->getName() . '][settings_edit_form][settings][selection_mode]"]' => [
+          'value' => 'advanced',
+        ],
       ],
     ];
 
