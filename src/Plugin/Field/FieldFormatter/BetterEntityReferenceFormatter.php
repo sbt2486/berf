@@ -115,7 +115,7 @@ class BetterEntityReferenceFormatter extends EntityReferenceEntityFormatter {
    * @param \Drupal\Core\Form\FormStateInterface $form_state
    *   The current state of the form.
    */
-  public function validateOffset(&$element, FormStateInterface $form_state) {
+  public function validateOffset(array &$element, FormStateInterface $form_state) {
     $cardinality = $this->fieldDefinition->getFieldStorageDefinition()->getCardinality();
     $field_settings = $form_state->getValues()['fields'][$form_state->getTriggeringElement()['#field_name']]['settings_edit_form']['settings'];
     $offset_maximum = $cardinality - $field_settings['amount'];
